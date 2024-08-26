@@ -3,7 +3,7 @@ import pandas as pd
 from pydantic import BaseModel
 from typing import List, Optional, Literal
 import torch
-from laserembeddings import Laser
+from laserembeddings import Laser # type: ignore
 
 class Assessment(BaseModel):
     id: Optional[int] = None
