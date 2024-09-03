@@ -238,7 +238,7 @@ def regression_analysis(results: List[dict]):
 
 # Run the assessment and save results to a file
 output = assess()
-save_results_to_file(output["results"], "/LABsE/resultsLABsE.txt")
+save_results_to_file(output["results"], "./LABsE/resultsLABsE.txt")
 
 # Perform additional analyses
 correlation_analysis(output["results"])
