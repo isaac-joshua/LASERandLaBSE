@@ -1,26 +1,19 @@
+#  Locally working code
+
 import math
 import os
-import datetime
-import numpy as np
 from typing import Literal, Optional, List
 import pandas as pd
 from pydantic import BaseModel
 from transformers import BertTokenizerFast, BertModel
 import torch
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.cluster import KMeans
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
 from tqdm import tqdm
-from wordcloud import WordCloud 
 
 class Assessment(BaseModel):
     id: Optional[int] = None
     revision_id: int
     reference_id: int
     type: Literal["semantic-similarity"]
-
 
 def get_labse_model(cache_path="model_cache"):
     try:
@@ -50,7 +43,6 @@ def get_labse_model(cache_path="model_cache"):
 
     return semsim_model, semsim_tokenizer
 
-
 def get_sim_scores(
     rev_sents_output: List[str],
     ref_sents_output: List[str],
@@ -61,8 +53,8 @@ def get_sim_scores(
         semsim_model, semsim_tokenizer = get_labse_model()
     
     # Debugging: Print out the first few sentences
-    print(f"rev_sents_output: {rev_sents_output[:5]}")
-    print(f"ref_sents_output: {ref_sents_output[:5]}")
+    # print(f"rev_sents_output: {rev_sents_output[:5]}")
+    # print(f"ref_sents_output: {ref_sents_output[:5]}")
 
     rev_sents_input = semsim_tokenizer(
         rev_sents_output, return_tensors="pt", padding=True, truncation=True
@@ -83,7 +75,6 @@ def get_sim_scores(
 
     return sim_scores
 
-
 def get_text(file_path: str):
     encodings = ['utf-8', 'latin-1', 'ascii', 'utf-16']
     for encoding in encodings:
@@ -95,12 +86,10 @@ def get_text(file_path: str):
             continue
     raise ValueError(f"Unable to read the file with any of the encodings: {encodings}")
 
-
-def save_results_to_file(results: List[dict], file_path: str):
+def save_sim_scores_to_file(sim_scores: List[float], file_path: str):
     with open(file_path, 'w') as file:
-        for result in results:
-            file.write(f"{result}\n")
-
+        for score in sim_scores:
+            file.write(f"{score}\n")
 
 def assess():
     assessment = {
@@ -113,8 +102,9 @@ def assess():
         assessment = Assessment(**assessment)
         
     # Paths to text files on the system
-    revision_file_path = "LABsE/SmallData27/aai-aai-small.txt"
-    reference_file_path = "LABsE/SmallData27/fai-fai.txt"
+
+    revision_file_path = "C:/Users/josh7/VSCODE/laser and lase/LASERandLABSE/LABsE/SmallData27/gmv-gmvRNT.txt"
+    reference_file_path = "C:/Users/josh7/VSCODE/laser and lase/LASERandLABSE/LABsE/SmallData27/gum-gum.txt"
     
     revision_text = get_text(revision_file_path)
     reference_text = get_text(reference_file_path)
@@ -165,87 +155,9 @@ def assess():
         for j in range(len(vrefs))
     ]
 
-    print(results)
+    print(results[:])
 
     return {"results": results}
 
-
-def correlation_analysis(results: List[dict]):
-    df = pd.DataFrame(results)
-    plt.figure(figsize=(10, 6))
-    sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
-    plt.title("Correlation Analysis")
-    plt.show()
-
-
-def time_series_analysis(results: List[dict]):
-    df = pd.DataFrame(results)
-    df['timestamp'] = pd.to_datetime(df['vref'], unit='s')  # assuming 'vref' is a timestamp
-    df = df.set_index('timestamp').sort_index()
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(df.index, df['score'], label='Semantic Similarity')
-    plt.xlabel('Time')
-    plt.ylabel('Semantic Similarity Score')
-    plt.title('Time Series Analysis')
-    plt.legend()
-    plt.show()
-
-
-def text_based_analysis(revision_text: str, reference_text: str):
-    combined_text = revision_text + " " + reference_text
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(combined_text)
-
-    plt.figure(figsize=(10, 6))
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis('off')
-    plt.title('Word Cloud for Combined Text Data')
-    plt.show()
-
-
-# def cluster_characterization(results: List[dict]):
-#     df = pd.DataFrame(results)
-#     kmeans = KMeans(n_clusters=3, random_state=0).fit(df[['score']])
-#     df['cluster'] = kmeans.labels_
-
-#     plt.figure(figsize=(10, 6))
-#     sns.scatterplot(x='vref', y='score', hue='cluster', data=df, palette='viridis')
-#     plt.title('Cluster Characterization')
-#     plt.show()
-
-
-def regression_analysis(results: List[dict]):
-    df = pd.DataFrame(results)
-    X = df[['vref']]
-    y = df['score']
-    model = LinearRegression().fit(X, y)
-    
-    y_pred = model.predict(X)
-    mse = mean_squared_error(y, y_pred)
-
-    plt.figure(figsize=(10, 6))
-    plt.scatter(X, y, color='blue', label='Actual')
-    plt.plot(X, y_pred, color='red', label='Predicted')
-    plt.xlabel('vref')
-    plt.ylabel('Semantic Similarity Score')
-    plt.title('Regression Analysis')
-    plt.legend()
-    plt.show()
-
-    print(f"Mean Squared Error: {mse}")
-
-
-# Run the assessment and save results to a file
-output = assess()
-save_results_to_file(output["results"], "./LABsE/resultsLABsE.txt")
-
-# Perform additional analyses
-correlation_analysis(output["results"])
-time_series_analysis(output["results"])
-revision_file_path = "LABsE/SmallData27/aai-aai-small.txt"
-reference_file_path = "LABsE/SmallData27/fai-fai.txt"
-revision_text = get_text(revision_file_path)
-reference_text = get_text(reference_file_path)
-text_based_analysis(revision_text, reference_text)
-# cluster_characterization(output["results"])
-regression_analysis(output["results"])
+if __name__ == "__main__":
+    assess()
