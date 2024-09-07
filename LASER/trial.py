@@ -1,247 +1,147 @@
 import os
-import pandas as pd
-from pydantic import BaseModel
-from typing import List, Optional, Literal
+import tkinter as tk
+from tkinter import filedialog, Text
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
 import torch
 import numpy as np
-from laserembeddings import Laser # type: ignore
-# from test import  removeverse
-import matplotlib.pyplot as plt
+from laserembeddings import Laser
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from collections import Counter
+from sklearn.linear_model import LinearRegression
 
-class Assessment(BaseModel):
-    id: Optional[int] = None
-    revision_id: int
-    reference_id: int
-    type: Literal["semantic-similarity"]
+class SimilarityApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Semantic Similarity Analysis")
 
-def get_text(file_path: str):
-    print("Reading the file")
-    encodings = ['utf-8', 'latin-1', 'ascii', 'utf-16']
-    for encoding in encodings:
-        try:
-            with open(file_path, 'r', encoding=encoding) as file:
-                content = file.read()
-            return content
-        except UnicodeDecodeError:
-            continue
-    raise ValueError(f"Unable to read the file with any of the encodings: {encodings}")
+        # File selection buttons
+        self.select_revision_button = tk.Button(root, text="Select Revision File", command=self.select_revision_file)
+        self.select_revision_button.pack()
 
-def get_sim_scores(rev_sents_output: List[str],ref_sents_output: List[str],):
-    print("Getting the similarity scores")
-    laser = Laser()
-    rev_sents_embedding = laser.embed_sentences(rev_sents_output, lang='en')
-    ref_sents_embedding = laser.embed_sentences(ref_sents_output, lang='en')
-    sim_scores = torch.nn.functional.cosine_similarity(
-        torch.tensor(rev_sents_embedding),
-        torch.tensor(ref_sents_embedding),
-        dim=1
-    ).tolist()
-    return sim_scores
+        self.select_reference_button = tk.Button(root, text="Select Reference File", command=self.select_reference_file)
+        self.select_reference_button.pack()
 
-def assess(revision,reference):
-    print("Assessing the similarity")
-    revision_file_path = revision
-    reference_file_path = reference
+        # Text output display
+        self.text_output = Text(root, height=20, width=80)
+        self.text_output.pack()
 
-    revision_text = get_text(revision_file_path)
-    reference_text = get_text(reference_file_path)
+        # Figure for plotting
+        self.figure, self.ax = plt.subplots()
+        self.canvas = FigureCanvasTkAgg(self.figure, master=root)
+        self.canvas.get_tk_widget().pack()
 
-    revision_sentences = revision_text.split('\n')
-    reference_sentences = reference_text.split('\n')
+        # Initialize file paths
+        self.revision_file_path = None
+        self.reference_file_path = None
 
-    sim_scores = get_sim_scores(revision_sentences, reference_sentences)
+    def select_revision_file(self):
+        self.revision_file_path = filedialog.askopenfilename(title="Select the Revision File",
+                                                             filetypes=[("Text Files", "*.txt")])
+        self.text_output.insert(tk.END, f"Selected Revision File: {self.revision_file_path}\n")
 
-    return sim_scores
+    def select_reference_file(self):
+        self.reference_file_path = filedialog.askopenfilename(title="Select the Reference File",
+                                                              filetypes=[("Text Files", "*.txt")])
+        self.text_output.insert(tk.END, f"Selected Reference File: {self.reference_file_path}\n")
 
-def save_sim_scores_to_file(sim_scores, file_path):
-    print("Saving the similarity scores to file")
-    with open(file_path, 'w') as file:
-        for score in sim_scores:
-            file.write(f"{score}\n")
+        if self.revision_file_path and self.reference_file_path:
+            self.run_analysis()
 
-def replace_keyword_in_file(file_path: str, keyword: str = "<range>", replacement: str = " "):
-    print("Replacing the keyword in the file")
-    try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
+    def run_analysis(self):
+        # Generate filenames for saving results
+        revision_filename = os.path.basename(self.revision_file_path).split('-')[0]
+        reference_filename = os.path.basename(self.reference_file_path).split('-')[0]
 
-        modified_lines = [line.replace(keyword, replacement) for line in lines]
+        # Load and process files
+        revision_text = self.get_text(self.revision_file_path)
+        reference_text = self.get_text(self.reference_file_path)
 
-        with open(file_path, 'w', encoding='utf-8') as file:
-            file.writelines(modified_lines)
+        revision_sentences = revision_text.split('\n')
+        reference_sentences = reference_text.split('\n')
 
-        print(f"Replaced '{keyword}' with '{replacement}' in {file_path}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+        sim_scores, embeddings = self.get_sim_scores_and_embeddings(revision_sentences, reference_sentences)
 
-def get_line_numbers_from_vref(file_path: str):
-    print("Getting the line numbers from vref file")
-    try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
+        # Display descriptive statistics
+        self.display_descriptive_statistics(sim_scores)
 
-        line_numbers = []
-        for line in lines:
+        # Plot similarity score distribution
+        self.plot_similarity_distribution(sim_scores)
+
+        # Perform clustering
+        labels = self.cluster_verses_embeddings(embeddings)
+
+        # Display clustering results
+        self.characterize_clusters(revision_sentences, labels)
+
+    def get_text(self, file_path):
+        encodings = ['utf-8', 'latin-1', 'ascii', 'utf-16']
+        for encoding in encodings:
             try:
-                line_number = int(line.strip().split()[-1])
-                line_numbers.append(line_number)
-                print(line_numbers)
-            except ValueError:
-                line_numbers.append(-1)  
-        return line_numbers
-    except Exception as e:
-        print(f"An error occurred while reading vref file: {e}")
-        return []
+                with open(file_path, 'r', encoding=encoding) as file:
+                    content = file.read()
+                return content
+            except UnicodeDecodeError:
+                continue
+        raise ValueError(f"Unable to read the file with any of the encodings: {encodings}")
 
-def replace_lines_with_blank(file_path: str, line_numbers: List[int]):
-    print("Starting to replace the lines")
-    try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
+    def get_sim_scores_and_embeddings(self, rev_sents_output, ref_sents_output):
+        laser = Laser()
+        rev_sents_embedding = laser.embed_sentences(rev_sents_output, lang='en')
+        ref_sents_embedding = laser.embed_sentences(ref_sents_output, lang='en')
+        sim_scores = torch.nn.functional.cosine_similarity(
+            torch.tensor(rev_sents_embedding),
+            torch.tensor(ref_sents_embedding),
+            dim=1
+        ).tolist()
+        return sim_scores, rev_sents_embedding
 
-        for line_number in line_numbers:
-            if line_number == -1:
-                lines.append(' \n')  
-            elif 0 <= line_number - 1 < len(lines):
-                lines[line_number - 1] = ' \n' 
+    def display_descriptive_statistics(self, sim_scores):
+        mean_score = np.mean(sim_scores)
+        median_score = np.median(sim_scores)
+        std_dev_score = np.std(sim_scores)
+        self.text_output.insert(tk.END, f"Mean similarity: {mean_score}\n")
+        self.text_output.insert(tk.END, f"Median similarity: {median_score}\n")
+        self.text_output.insert(tk.END, f"Standard Deviation of similarity scores: {std_dev_score}\n")
 
-        with open(file_path, 'w', encoding='utf-8') as file:
-            file.writelines(lines)
+    def plot_similarity_distribution(self, sim_scores):
+        self.ax.clear()
+        self.ax.hist(sim_scores, bins=20, alpha=0.75)
+        self.ax.set_title('Distribution of Similarity Scores')
+        self.ax.set_xlabel('Similarity Score')
+        self.ax.set_ylabel('Frequency')
+        self.canvas.draw()
 
-        print(f"Replaced specified lines with blank spaces in {file_path}")
-    except Exception as e:
-        print(f"An error occurred while processing the file {file_path}: {e}")
+    def cluster_verses_embeddings(self, embeddings):
+        optimal_k = 2
+        optimal_silhouette = -1
+        for k in range(2, 10):
+            kmeans = KMeans(n_clusters=k, random_state=0).fit(embeddings)
+            silhouette_avg = silhouette_score(embeddings, kmeans.labels_)
+            self.text_output.insert(tk.END, f"Silhouette Score for k={k}: {silhouette_avg}\n")
+            if silhouette_avg > optimal_silhouette:
+                optimal_k = k
+                optimal_silhouette = silhouette_avg
+        kmeans = KMeans(n_clusters=optimal_k, random_state=0).fit(embeddings)
+        self.text_output.insert(tk.END, f"Optimal number of clusters: {optimal_k}\n")
+        return kmeans.labels_
+
+    def characterize_clusters(self, sentences, labels):
+        stop_words = set(stopwords.words('english'))
+        cluster_contents = {i: [] for i in set(labels)}
+        for sentence, label in zip(sentences, labels):
+            words = word_tokenize(sentence)
+            filtered_words = [word for word in words if word not in stop_words and word.isalnum()]
+            cluster_contents[label].extend(filtered_words)
         
-def merge_files(file1_path, file2_path, output_path):
-    print("Merging the files")
-    with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2, open(output_path, 'w') as output:
-        # Use zip_longest to handle files of different lengths
-        from itertools import zip_longest
-        # Iterate over both files simultaneously
-        for line1, line2 in zip_longest(file1, file2, fillvalue=''):
-            # Strip newline characters and combine the lines
-            merged_line = line1.strip() +' '+ line2.strip() + '\n'
-            output.write(merged_line)
-
-def removeverse(refernce_path, result_path):
-    print("Removing the verse")
-    with open(refernce_path, 'r') as vref_file:
-        vref_lines = vref_file.readlines()
-
-    with open(result_path, 'r') as merged_file:
-        merged_lines = merged_file.readlines()
-
-    # Extract references to look for
-    vref_references = [line.strip() for line in vref_lines]
-
-    # Open the merged results file to write the updated content
-    with open('references/merged_results.txt', 'w') as merged_file_updated:
-        for line in merged_lines:
-            if any(ref in line for ref in vref_references):
-                merged_file_updated.write('\n')  # Write a blank line
-            else:
-                merged_file_updated.write(line)  # Write the original line
-
-    print("The references have been replaced with blank lines in the updated file.")
-#NEW
-def descriptive_statistics(sim_scores):
-    scores_array = np.array(sim_scores)
-    print("Mean similarity:", np.mean(scores_array))
-    print("Median similarity:", np.median(scores_array))
-    print("Standard Deviation of similarity scores:", np.std(scores_array))
-    plt.hist(scores_array, bins=20, alpha=0.75)
-    plt.title('Distribution of Similarity Scores')
-    plt.xlabel('Similarity Score')
-    plt.ylabel('Frequency')
-    plt.show()
-def cluster_verses_embeddings(embeddings):
-    optimal_k = 2
-    optimal_silhouette = -1
-    for k in range(2, 10): # Assuming a range for possible K values
-        kmeans = KMeans(n_clusters=k, random_state=0).fit(embeddings)
-        silhouette_avg = silhouette_score(embeddings, kmeans.labels_)
-        print(f"Silhouette Score for k={k}: {silhouette_avg}")
-        if silhouette_avg > optimal_silhouette:
-            optimal_k = k
-            optimal_silhouette = silhouette_avg
-    # Final model with optimal k
-    kmeans = KMeans(n_clusters=optimal_k, random_state=0).fit(embeddings)
-    print(f"Optimal number of clusters: {optimal_k}")
-    return kmeans.labels_
-def get_sim_scores_and_embeddings(rev_sents_output: List[str], ref_sents_output: List[str]):
-    print("Getting the similarity scores and embeddings")
-    laser = Laser()
-    rev_sents_embedding = laser.embed_sentences(rev_sents_output, lang='en')
-    ref_sents_embedding = laser.embed_sentences(ref_sents_output, lang='en')
-    sim_scores = torch.nn.functional.cosine_similarity(
-        torch.tensor(rev_sents_embedding),
-        torch.tensor(ref_sents_embedding),
-        dim=1
-    ).tolist()
-    return sim_scores, rev_sents_embedding
-def main():
-    vref_file_path = "references/vref_file.txt"
-    revision_file_path = "data/aai-aai.txt"
-    reference_file_path = "data/aak-aak.txt"
-    
-    # Replace keywords in the files
-    replace_keyword_in_file(revision_file_path)
-    replace_keyword_in_file(reference_file_path)
-    
-    # Get line numbers from vref and replace lines with blank
-    line_numbers = get_line_numbers_from_vref(vref_file_path)
-    replace_lines_with_blank(revision_file_path, line_numbers)
-    replace_lines_with_blank(reference_file_path, line_numbers)
-    
-    # Read text from files and split into sentences
-    revision_text = get_text(revision_file_path)
-    reference_text = get_text(reference_file_path)
-    revision_sentences = revision_text.split('\n')
-    reference_sentences = reference_text.split('\n')
-    
-    # Assess similarity and get embeddings
-    sim_scores, embeddings = get_sim_scores_and_embeddings(revision_sentences, reference_sentences)
-    
-    # Save and analyze similarity scores
-    save_sim_scores_to_file(sim_scores, "references/sim_scores.txt")
-    descriptive_statistics(sim_scores)
-    
-    # Cluster embedding analysis
-    labels = cluster_verses_embeddings(embeddings)
-    print("Cluster labels for verses:", labels)
-    
-    # Merge and remove verses based on reference
-    merge_files('references/vref.txt', 'references/sim_scores.txt', 'references/merged_results.txt')
-    merge_data_path = 'references/merged_results.txt'
-    removeverse(vref_file_path, merge_data_path)
-    
-    print("The process has been completed")
+        for label, words in cluster_contents.items():
+            word_freq = Counter(words)
+            self.text_output.insert(tk.END, f"Most common words in cluster {label}: {word_freq.most_common(10)}\n")
 
 if __name__ == "__main__":
-    main()
-
-
-# def main():
-#     vref_file_path = "references/vref_file.txt"
-#     revision_file_path = "data/aai-aai.txt"
-#     reference_file_path = "data/aak-aak.txt"
-    
-#     replace_keyword_in_file(revision_file_path)
-#     replace_keyword_in_file(reference_file_path)
-    
-#     line_numbers = get_line_numbers_from_vref(vref_file_path)
-    
-#     replace_lines_with_blank(revision_file_path, line_numbers)
-#     replace_lines_with_blank(reference_file_path, line_numbers)
-    
-#     sim_scores = assess(revision_file_path,reference_file_path)
-#     save_sim_scores_to_file(sim_scores, "references/sim_scores.txt")
-
-#     merge_files('references/vref.txt', 'references/sim_scores.txt', 'references/merged_results.txt')
-#     merge_data_path = 'references/merged_results.txt'
-#     removeverse(vref_file_path , merge_data_path)
-#     print("The process has been completed")
-# if __name__ == "__main__":
-#     main()
+    root = tk.Tk()
+    app = SimilarityApp(root)
+    root.mainloop()

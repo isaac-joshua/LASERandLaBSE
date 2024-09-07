@@ -4,17 +4,19 @@ from pydantic import BaseModel
 from typing import List, Optional, Literal
 import torch
 import numpy as np
-from laserembeddings import Laser  # type: ignore
+from laserembeddings import Laser
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from itertools import zip_longest
 from collections import Counter
 import nltk
-# nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.linear_model import LinearRegression
+import tkinter as tk
+from tkinter import filedialog
+
 class Assessment(BaseModel):
     id: Optional[int] = None
     revision_id: int
@@ -22,7 +24,6 @@ class Assessment(BaseModel):
     type: Literal["semantic-similarity"]
 
 def get_text(file_path: str):
-    print("Reading the file")
     encodings = ['utf-8', 'latin-1', 'ascii', 'utf-16']
     for encoding in encodings:
         try:
@@ -34,7 +35,6 @@ def get_text(file_path: str):
     raise ValueError(f"Unable to read the file with any of the encodings: {encodings}")
 
 def get_sim_scores_and_embeddings(rev_sents_output: List[str], ref_sents_output: List[str]):
-    print("Getting the similarity scores and embeddings")
     laser = Laser()
     rev_sents_embedding = laser.embed_sentences(rev_sents_output, lang='en')
     ref_sents_embedding = laser.embed_sentences(ref_sents_output, lang='en')
@@ -59,26 +59,23 @@ def descriptive_statistics(sim_scores):
 def cluster_verses_embeddings(embeddings):
     optimal_k = 2
     optimal_silhouette = -1
-    for k in range(2, 10):  # Assuming a range for possible K values
+    for k in range(2, 10):
         kmeans = KMeans(n_clusters=k, random_state=0).fit(embeddings)
         silhouette_avg = silhouette_score(embeddings, kmeans.labels_)
         print(f"Silhouette Score for k={k}: {silhouette_avg}")
         if silhouette_avg > optimal_silhouette:
             optimal_k = k
             optimal_silhouette = silhouette_avg
-    # Final model with optimal k
     kmeans = KMeans(n_clusters=optimal_k, random_state=0).fit(embeddings)
     print(f"Optimal number of clusters: {optimal_k}")
     return kmeans.labels_
 
 def save_sim_scores_to_file(sim_scores, file_path):
-    print("Saving the similarity scores to file")
     with open(file_path, 'w') as file:
         for score in sim_scores:
             file.write(f"{score}\n")
 
 def replace_keyword_in_file(file_path: str, keyword: str = "<range>", replacement: str = " "):
-    print("Replacing the keyword in the file")
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             lines = file.readlines()
@@ -90,7 +87,6 @@ def replace_keyword_in_file(file_path: str, keyword: str = "<range>", replacemen
         print(f"An error occurred: {e}")
 
 def get_line_numbers_from_vref(file_path: str):
-    print("Getting the line numbers from vref file")
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             lines = file.readlines()
@@ -107,7 +103,6 @@ def get_line_numbers_from_vref(file_path: str):
         return []
 
 def replace_lines_with_blank(file_path: str, line_numbers: List[int]):
-    print("Starting to replace the lines")
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             lines = file.readlines()
@@ -123,31 +118,24 @@ def replace_lines_with_blank(file_path: str, line_numbers: List[int]):
         print(f"An error occurred while processing the file {file_path}: {e}")
 
 def merge_files(file1_path, file2_path, output_path):
-    print("Merging the files")
     with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2, open(output_path, 'w') as output:
-        # Use zip_longest to handle files of different lengths
         for line1, line2 in zip_longest(file1, file2, fillvalue=''):
-            # Strip newline characters and combine the lines
             merged_line = line1.strip() + ' ' + line2.strip() + '\n'
             output.write(merged_line)
 
 def removeverse(reference_path, result_path):
-    print("Removing the verse")
     with open(reference_path, 'r') as vref_file:
         vref_lines = vref_file.readlines()
     with open(result_path, 'r') as merged_file:
         merged_lines = merged_file.readlines()
-    # Extract references to look for
     vref_references = [line.strip() for line in vref_lines]
-    # Open the merged results file to write the updated content
-    with open('references/merged_results.txt', 'w') as merged_file_updated:
+    with open(result_path, 'w') as merged_file_updated:
         for line in merged_lines:
             if any(ref in line for ref in vref_references):
-                merged_file_updated.write('\n')  # Write a blank line
+                merged_file_updated.write('\n')
             else:
-                merged_file_updated.write(line)  # Write the original line
-    print("The references have been replaced with blank lines in the updated file.")
-    
+                merged_file_updated.write(line)
+
 def analyze_correlation(data_frame, column1, column2):
     correlation = data_frame[column1].corr(data_frame[column2])
     print(f"Correlation between {column1} and {column2}: {correlation}")
@@ -156,7 +144,7 @@ def analyze_correlation(data_frame, column1, column2):
     plt.xlabel(column1)
     plt.ylabel(column2)
     plt.show()
-    
+
 def plot_time_series(sim_scores):
     plt.figure(figsize=(10, 5))
     plt.plot(sim_scores, label='Similarity Score')
@@ -165,7 +153,7 @@ def plot_time_series(sim_scores):
     plt.ylabel('Similarity Score')
     plt.legend()
     plt.show()
-    
+
 def analyze_extreme_cases(revision_sentences, reference_sentences, sim_scores, num_cases=5):
     sorted_indices = np.argsort(sim_scores)
     print("Lowest similarity verses:")
@@ -200,18 +188,36 @@ def regression_analysis(features, sim_scores):
     plt.xlabel('Actual Scores')
     plt.ylabel('Predicted Scores')
     plt.title('Regression Analysis Results')
-    plt.plot([min(sim_scores), max(sim_scores)], [min(predictions), max(predictions)], color='red')  # Line of best fit
+    plt.plot([min(sim_scores), max(sim_scores)], [min(predictions), max(predictions)], color='red')
     plt.show()
+
+def select_files():
+    root = tk.Tk()
+    root.withdraw()  # Hide the root window
+
+    # Select the revision file
+    revision_file_path = filedialog.askopenfilename(title="Select the Revision File",
+                                                    filetypes=[("Text Files", "*.txt")])
     
+    # Select the reference file
+    reference_file_path = filedialog.askopenfilename(title="Select the Reference File",
+                                                     filetypes=[("Text Files", "*.txt")])
+    
+    return revision_file_path, reference_file_path
+
 def main():
-    vref_file_path = "references/vref_file.txt"
-    revision_file_path = "data/aai-aai.txt"
-    reference_file_path = "data/aak-aak.txt"
+    revision_file_path, reference_file_path = select_files()
+    
+    revision_filename = os.path.basename(revision_file_path).split('.')[0]
+    reference_filename = os.path.basename(reference_file_path).split('.')[0]
+
+    sim_scores_filename = f"{revision_filename}-{reference_filename}-sim-scores.txt"
+    merged_results_filename = f"{revision_filename}-{reference_filename}-merged_results.txt"
     
     replace_keyword_in_file(revision_file_path)
     replace_keyword_in_file(reference_file_path)
     
-    line_numbers = get_line_numbers_from_vref(vref_file_path)
+    line_numbers = get_line_numbers_from_vref("references/vref_file.txt")
     
     replace_lines_with_blank(revision_file_path, line_numbers)
     replace_lines_with_blank(reference_file_path, line_numbers)
@@ -224,7 +230,7 @@ def main():
     
     sim_scores, embeddings = get_sim_scores_and_embeddings(revision_sentences, reference_sentences)
     
-    save_sim_scores_to_file(sim_scores, "references/sim_scores.txt")
+    save_sim_scores_to_file(sim_scores, f"references/{sim_scores_filename}")
     
     descriptive_statistics(sim_scores)
     
@@ -237,9 +243,9 @@ def main():
 
     regression_analysis(embeddings, sim_scores)
     
-    merge_files('references/vref.txt', 'references/sim_scores.txt', 'references/merged_results.txt')
-    merge_data_path = 'references/merged_results.txt'
-    removeverse(vref_file_path, merge_data_path)
+    merge_files('references/vref.txt', f"references/{sim_scores_filename}", f"references/{merged_results_filename}")
+    merge_data_path = f"references/{merged_results_filename}"
+    removeverse("references/vref_file.txt", merge_data_path)
     
     print("The process has been completed")
 
