@@ -183,6 +183,28 @@ class SimilarityApp:
         self.canvas.draw()
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = SimilarityApp(root)
-    root.mainloop()
+    main()
+
+
+# def main():
+#     vref_file_path = "references/vref_file.txt"
+#     revision_file_path = "data/aai-aai.txt"
+#     reference_file_path = "data/aak-aak.txt"
+    
+#     replace_keyword_in_file(revision_file_path)
+#     replace_keyword_in_file(reference_file_path)
+    
+#     line_numbers = get_line_numbers_from_vref(vref_file_path)
+    
+#     replace_lines_with_blank(revision_file_path, line_numbers)
+#     replace_lines_with_blank(reference_file_path, line_numbers)
+    
+#     sim_scores = assess(revision_file_path,reference_file_path)
+#     save_sim_scores_to_file(sim_scores, "references/sim_scores.txt")
+
+#     merge_files('references/vref.txt', 'references/sim_scores.txt', 'references/merged_results.txt')
+#     merge_data_path = 'references/merged_results.txt'
+#     removeverse(vref_file_path , merge_data_path)
+#     print("The process has been completed")
+# if __name__ == "__main__":
+#     main()
