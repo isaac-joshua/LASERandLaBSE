@@ -179,6 +179,11 @@ def removeverse(reference_path, result_path):
                 merged_file_updated.write(line)  # Write the original line
     print("The references have been replaced with blank lines in the updated file.")
 
+def save_sim_scores_to_file(sim_scores, file_path):
+    print("Saving the similarity scores to file")
+    with open(file_path, 'w') as file:
+        for score in sim_scores:
+            file.write(f"{score}\n")
 
 def assess():
     assessment = {
