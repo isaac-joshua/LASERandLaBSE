@@ -7,3 +7,5 @@ model_cache/models--setu4993--LaBSE/snapshots/5afa72968dfe068421082cbc30411073b1
 model_cache/models--setu4993--LaBSE/.no_exist/5afa72968dfe068421082cbc30411073b15a6693/added_tokens.json
 model_cache/models--setu4993--LaBSE/snapshots/5afa72968dfe068421082cbc30411073b15a6693/vocab.txt
 LaBSE/model_cache
+LASER/corpus
+__pycache__
