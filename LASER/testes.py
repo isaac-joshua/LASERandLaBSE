@@ -39,7 +39,7 @@ def get_text(file_path: str):
 def get_sim_scores_and_embeddings(rev_sents_output: List[str], ref_sents_output: List[str]):
     print("Getting the similarity scores and embeddings")
     laser = Laser()
-    rev_sents_embedding = laser.embed_sentences(rev_sents_output, lang='en')
+    rev_sents_embedding = laser.embed_sentences(rev_sents_output, lang='be')
     ref_sents_embedding = laser.embed_sentences(ref_sents_output, lang='en')
     
     # Convert NumPy arrays to PyTorch tensors
@@ -50,6 +50,34 @@ def get_sim_scores_and_embeddings(rev_sents_output: List[str], ref_sents_output:
     sim_scores = torch.nn.functional.cosine_similarity(rev_sents_tensor, ref_sents_tensor, dim=1).tolist()
 
     return sim_scores, rev_sents_embedding
+
+# def get_sim_scores_and_embeddings(rev_sents_output: List[str], ref_sents_output: List[str]):
+#     print("Getting the similarity scores and embeddings")
+    
+#     # Ensure the sentence lists are of equal length
+#     if len(rev_sents_output) != len(ref_sents_output):
+#         print(f"Warning: Mismatch in number of sentences! "
+#               f"Revision sentences: {len(rev_sents_output)}, Reference sentences: {len(ref_sents_output)}")
+        
+#         # Truncate or pad the lists to make them equal
+#         min_len = min(len(rev_sents_output), len(ref_sents_output))
+#         rev_sents_output = rev_sents_output[:min_len]  # Truncate the longer list
+#         ref_sents_output = ref_sents_output[:min_len]  # Truncate the longer list
+
+#     # Embed the sentences
+#     laser = Laser()
+#     rev_sents_embedding = laser.embed_sentences(rev_sents_output, lang='as')
+#     ref_sents_embedding = laser.embed_sentences(ref_sents_output, lang='en')
+    
+#     # Convert NumPy arrays to PyTorch tensors
+#     rev_sents_tensor = torch.tensor(rev_sents_embedding)
+#     ref_sents_tensor = torch.tensor(ref_sents_embedding)
+
+#     # Calculate similarity scores
+#     sim_scores = torch.nn.functional.cosine_similarity(rev_sents_tensor, ref_sents_tensor, dim=1).tolist()
+
+#     return sim_scores, rev_sents_embedding
+
 
 def descriptive_statistics(sim_scores):
     scores_array = np.array(sim_scores)
@@ -188,10 +216,10 @@ def main():
     replace_keyword_in_file(revision_file_path)
     replace_keyword_in_file(reference_file_path)
     
-    line_numbers = get_line_numbers_from_vref("references/vref_file.txt")
+    # line_numbers = get_line_numbers_from_vref("references/vref_file.txt")
     
-    replace_lines_with_blank(revision_file_path, line_numbers)
-    replace_lines_with_blank(reference_file_path, line_numbers)
+    # replace_lines_with_blank(revision_file_path, line_numbers)
+    # replace_lines_with_blank(reference_file_path, line_numbers)
     
     revision_text = get_text(revision_file_path)
     reference_text = get_text(reference_file_path)
@@ -201,7 +229,7 @@ def main():
     
     sim_scores, embeddings = get_sim_scores_and_embeddings(revision_sentences, reference_sentences)
     
-    save_sim_scores_to_file(sim_scores, f"references/{sim_scores_filename}")
+    save_sim_scores_to_file(sim_scores, f"sim/{sim_scores_filename}")
     
     # descriptive_statistics(sim_scores)
     # labels = cluster_verses_embeddings(embeddings)
@@ -212,7 +240,7 @@ def main():
 
     # regression_analysis(embeddings, sim_scores)
     
-    merge_files('references/vref.txt', f"references/{sim_scores_filename}", f"references/{merged_results_filename}")
+    merge_files('references/vref.txt', f"sim/{sim_scores_filename}", f"references/{merged_results_filename}")
     merge_data_path = f"references/{merged_results_filename}"
     removeverse("references/vref_file.txt", merge_data_path)
     
