@@ -1,42 +1,49 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy import stats
-import numpy as np
+from ipywidgets import interact
+import ipywidgets as widgets
 
-# Reading the two files
-file_path_1 = 'sim/wol-eng-labse-sim_scores.txt'  # Replace with the correct path for file 1
-file_path_2 = 'sim/wol-eng-laser-sim-scores.txt'  # Replace with the correct path for file 2
+# Load the LabSE and LASER scores
+labse_file_path = 'sim/wol-eng-labse-sim_scores.txt'
+laser_file_path = 'sim/wol-eng-laser-sim-scores.txt'
+vref_file_path = 'references/vref.txt'
 
-data_1 = pd.read_csv(file_path_1, header=None)
-data_2 = pd.read_csv(file_path_2, header=None)
+# Read files
+labse_scores = pd.read_csv(labse_file_path, header=None)
+laser_scores = pd.read_csv(laser_file_path, header=None)
+vref = pd.read_csv(vref_file_path, sep=" ", header=None)
 
-plt.figure(figsize=(10,6))
-plt.plot(data_1.index, data_1[0], label='LABSE')
-plt.plot(data_2.index, data_2[0], label='LASER', linestyle='--')
-plt.title('Comparison of Similarity Scores from Two Files')
-plt.xlabel('Index')
-plt.ylabel('Similarity Score')
-plt.legend()
-plt.show()
+# Prepare the scatter plot data
+verses = vref[0]  # Assuming the first column is the verse reference
+labse_scores.columns = ['LaBSE']
+laser_scores.columns = ['LASER']
 
-plt.figure(figsize=(10,6))
-plt.hist(data_1[0], bins=20, color='blue', alpha=0.5, label='LABSE')
-plt.hist(data_2[0], bins=20, color='orange', alpha=0.5, label='LASER')
-plt.title('Distribution of Similarity Scores for Both Files')
-plt.xlabel('Similarity Score')
-plt.ylabel('Frequency')
-plt.legend()
-plt.show()
+# Prepare the merged dataframe
+df = pd.DataFrame({'Verses': verses, 'LaBSE': labse_scores['LaBSE'], 'LASER': laser_scores['LASER']})
 
+# Function to create a plot with slider input
+def plot_interactive(labse_threshold, laser_threshold):
+    # Define the highlight condition based on the thresholds
+    highlight_condition = (df['LaBSE'] > labse_threshold) & (df['LASER'] > laser_threshold)
+    
+    # Create the scatter plot
+    plt.figure(figsize=(10, 6))
+    plt.scatter(df['LaBSE'], df['LASER'], c='blue', alpha=0.5, label='Regular Verses')
+    
+    # Highlight the specific verses
+    plt.scatter(df['LaBSE'][highlight_condition], df['LASER'][highlight_condition], 
+                c='red', alpha=0.8, label='Highlighted Verses')
+    
+    # Add titles and labels
+    plt.title(f"Scatter Plot of LaBSE vs LASER Scores (Thresholds: LaBSE > {labse_threshold}, LASER > {laser_threshold})")
+    plt.xlabel("LaBSE Scores")
+    plt.ylabel("LASER Scores")
+    plt.legend()
+    
+    # Show the plot
+    plt.show()
 
-correlation = np.corrcoef(data_1[0], data_2[0])[0, 1]
-print(f'Correlation between File 1 and File 2 similarity scores: {correlation:.4f}')
-
-mean_1 = np.mean(data_1[0])
-mean_2 = np.mean(data_2[0])
-variance_1 = np.var(data_1[0])
-variance_2 = np.var(data_2[0])
-
-print(f'LABSE - Mean: {mean_1:.4f}, Variance: {variance_1:.4f}')
-print(f'LASER - Mean: {mean_2:.4f}, Variance: {variance_2:.4f}')
-
+# Create sliders for LaBSE and LASER thresholds
+interact(plot_interactive, 
+         labse_threshold=widgets.FloatSlider(value=0.9, min=0, max=1, step=0.01, description='LaBSE Threshold'),
+         laser_threshold=widgets.FloatSlider(value=0.9, min=0, max=1, step=0.01, description='LASER Threshold'))
