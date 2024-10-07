@@ -1,0 +1,12 @@
+pydantic
+transformers
+torch
+pandas
+matplotlib
+numpy
+seaborn
+scikit-learn
+wordcloud
+tqdm
+nltk
+# itertools - part of Python standard library, no need to install

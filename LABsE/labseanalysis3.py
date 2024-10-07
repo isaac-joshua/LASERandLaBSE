@@ -1,4 +1,5 @@
 import math
+import os
 from typing import List, Optional, Dict, Literal
 from pydantic import BaseModel
 from transformers import BertModel, BertTokenizerFast
@@ -8,9 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from sklearn.cluster import KMeans
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, silhouette_score
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import silhouette_score
 from wordcloud import WordCloud
 from tqdm import tqdm
 from collections import Counter
@@ -25,17 +25,19 @@ class Assessment(BaseModel):
     type: Literal["semantic-similarity"]
 
 def get_labse_model(cache_path="model_cache"):
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    
     try:
         print("Trying to load model from cache...")
         semsim_model = BertModel.from_pretrained(
             "setu4993/LaBSE", cache_dir=cache_path
-        ).eval()
+        ).to(device).eval()
     except OSError as e:
         print(e)
         print("Downloading model instead of using cache...")
         semsim_model = BertModel.from_pretrained(
             "setu4993/LaBSE", cache_dir=cache_path, force_download=True
-        ).eval()
+        ).to(device).eval()
     print("Semantic model initialized...")
 
     try:
@@ -50,27 +52,28 @@ def get_labse_model(cache_path="model_cache"):
         )
     print("Tokenizer initialized...")
 
-    return semsim_model, semsim_tokenizer
+    return semsim_model, semsim_tokenizer, device
 
 def get_sim_scores(
     rev_sents_output: List[str],
     ref_sents_output: List[str],
     semsim_model=None,
     semsim_tokenizer=None,
+    device="cpu"
 ):
     if semsim_model is None or semsim_tokenizer is None:
-        semsim_model, semsim_tokenizer = get_labse_model()
-    
-    # Debugging: Print out the first few sentences
+        semsim_model, semsim_tokenizer, device = get_labse_model()
+
     print(f"rev_sents_output: {rev_sents_output[:5]}")
     print(f"ref_sents_output: {ref_sents_output[:5]}")
 
     rev_sents_input = semsim_tokenizer(
         rev_sents_output, return_tensors="pt", padding=True, truncation=True
-    )
+    ).to(device)
     ref_sents_input = semsim_tokenizer(
         ref_sents_output, return_tensors="pt", padding=True, truncation=True
-    )
+    ).to(device)
+
     with torch.no_grad():
         rev_sents_output = semsim_model(**rev_sents_input)
         ref_sents_output = semsim_model(**ref_sents_input)
@@ -166,6 +169,9 @@ def save_results_to_file(results: List[dict], file_path: str):
             file.write(f"{result}\n")
 
 def get_text(file_path: str) -> str:
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The file {file_path} does not exist.")
+    
     encodings = ['utf-8', 'latin-1', 'ascii', 'utf-16']
     for encoding in encodings:
         try:
@@ -177,6 +183,10 @@ def get_text(file_path: str) -> str:
     raise ValueError(f"Unable to read the file with any of the encodings: {encodings}")
 
 def replace_keyword_in_file(file_path: str, keyword: str = "<range>", replacement: str = " "):
+    if not os.path.exists(file_path):
+        print(f"File {file_path} not found. Skipping replacement.")
+        return
+    
     print("Replacing the keyword in the file")
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -206,6 +216,10 @@ def get_line_numbers_from_vref(file_path: str) -> List[int]:
         return []
 
 def replace_lines_with_blank(file_path: str, line_numbers: List[int]):
+    if not os.path.exists(file_path):
+        print(f"File {file_path} not found. Skipping line replacement.")
+        return
+
     print("Starting to replace the lines")
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -217,35 +231,31 @@ def replace_lines_with_blank(file_path: str, line_numbers: List[int]):
                 lines[line_number - 1] = ' \n'
         with open(file_path, 'w', encoding='utf-8') as file:
             file.writelines(lines)
-        print(f"Replaced specified lines with blank spaces in {file_path}")
+        print(f"Replaced specified lines with blanks in {file_path}")
     except Exception as e:
-        print(f"An error occurred while processing the file {file_path}: {e}")
+        print(f"An error occurred while replacing lines: {e}")
 
-def merge_files(file1_path: str, file2_path: str, output_path: str):
-    print("Merging the files")
-    with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2, open(output_path, 'w') as output:
-        # Use zip_longest to handle files of different lengths
-        for line1, line2 in zip_longest(file1, file2, fillvalue=''):
-            # Strip newline characters and combine the lines
-            merged_line = line1.strip() + ' ' + line2.strip() + '\n'
-            output.write(merged_line)
+def merge_files(file1: str, file2: str, output_file: str):
+    print("Merging files")
+    try:
+        with open(file1, 'r') as f1, open(file2, 'r') as f2, open(output_file, 'w') as outfile:
+            for line1, line2 in zip_longest(f1, f2, fillvalue=''):
+                outfile.write(f"{line1.strip()}\t{line2.strip()}\n")
+        print(f"Merged files into {output_file}")
+    except Exception as e:
+        print(f"An error occurred while merging files: {e}")
 
-def removeverse(reference_path: str, result_path: str):
-    print("Removing the verse")
-    with open(reference_path, 'r') as vref_file:
-        vref_lines = vref_file.readlines()
-    with open(result_path, 'r') as merged_file:
-        merged_lines = merged_file.readlines()
-    # Extract references to look for
-    vref_references = [line.strip() for line in vref_lines]
-    # Open the merged results file to write the updated content
-    with open('references/merged_results.txt', 'w') as merged_file_updated:
-        for line in merged_lines:
-            if any(ref in line for ref in vref_references):
-                merged_file_updated.write('\n')  # Write a blank line
-            else:
-                merged_file_updated.write(line)  # Write the original line
-    print("The references have been replaced with blank lines in the updated file.")
+def removeverse(vref_file: str, merged_file: str):
+    print("Removing verses from merged file")
+    try:
+        with open(vref_file, 'r') as vref, open(merged_file, 'r') as merged, open('final_output.txt', 'w') as final:
+            vref_lines = set(vref.read().splitlines())
+            for line in merged:
+                if line.split('\t')[0] not in vref_lines:
+                    final.write(line)
+        print(f"Verses removed. Final output written to 'final_output.txt'")
+    except Exception as e:
+        print(f"An error occurred while removing verses: {e}")
 
 def assess():
     assessment = {
@@ -256,10 +266,10 @@ def assess():
 
     if isinstance(assessment, dict):
         assessment = Assessment(**assessment)
-        
-    # Paths to text files on the system
-    revision_file_path = "LABsE/SmallData27/zpl-zplNT.txt"
-    reference_file_path = "LABsE/SmallData27/zpm-zpmNT.txt"
+
+    # Absolute paths to text files on the system
+    revision_file_path = r"./SmallData27/zpl-zplNT.txt"
+    reference_file_path = r"./SmallData27/zpm-zpmNT.txt"
     
     replace_keyword_in_file(revision_file_path)
     replace_keyword_in_file(reference_file_path)
@@ -268,17 +278,19 @@ def assess():
     replace_lines_with_blank(revision_file_path, line_numbers)
     replace_lines_with_blank(reference_file_path, line_numbers)
 
-    revision_text = get_text(revision_file_path)
-    reference_text = get_text(reference_file_path)
+    try:
+        revision_text = get_text(revision_file_path)
+        reference_text = get_text(reference_file_path)
+    except FileNotFoundError as e:
+        print(e)
+        return None
 
-    # Create DataFrames from text files
     revision_lines = revision_text.split('\n')
     reference_lines = reference_text.split('\n')
 
     revision_df = pd.DataFrame(revision_lines, columns=["revision"])
     reference_df = pd.DataFrame(reference_lines, columns=["reference"])
 
-    # Merge the DataFrames (assuming you want to concatenate them along the columns)
     merged_df = pd.concat([revision_df, reference_df], axis=1)
     print(merged_df.size)
 
@@ -293,16 +305,16 @@ def assess():
     ref_sents_batched = [
         ref_sents[i : i + batch_size] for i in range(0, len(ref_sents), batch_size)
     ]
-    semsim_model, semsim_tokenizer = get_labse_model()
+    
+    semsim_model, semsim_tokenizer, device = get_labse_model()
     sim_scores = []
     
     for i, (rev_batch, ref_batch) in enumerate(tqdm(zip(rev_sents_batched, ref_sents_batched), total=len(rev_sents_batched))):
-        # Debugging: Ensure no empty strings are in the batch
         rev_batch = [sent if sent else " " for sent in rev_batch]
         ref_batch = [sent if sent else " " for sent in ref_batch]
         
         try:
-            batch_scores, rev_sents_embedding = get_sim_scores(rev_batch, ref_batch, semsim_model, semsim_tokenizer)
+            batch_scores, rev_sents_embedding = get_sim_scores(rev_batch, ref_batch, semsim_model, semsim_tokenizer, device)
             sim_scores.extend(batch_scores)
         except Exception as e:
             print(f"Error processing batch {i}: {e}")
@@ -324,76 +336,19 @@ def assess():
 
     return {"results": results}
 
-def correlation_analysis(results: List[dict]):
-    df = pd.DataFrame(results)
-    plt.figure(figsize=(10, 6))
-    sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
-    plt.title("Correlation Analysis")
-    plt.show()
-
-def time_series_analysis(results: List[dict]):
-    df = pd.DataFrame(results)
-    df['timestamp'] = pd.to_datetime(df['vref'], unit='s')  # assuming 'vref' is a timestamp
-    df = df.set_index('timestamp').sort_index()
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(df.index, df['score'], label='Semantic Similarity')
-    plt.xlabel('Time')
-    plt.ylabel('Semantic Similarity Score')
-    plt.title('Time Series Analysis')
-    plt.legend()
-    plt.show()
-
-def text_based_analysis(revision_text: str, reference_text: str):
-    combined_text = revision_text + " " + reference_text
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(combined_text)
-
-    plt.figure(figsize=(10, 6))
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis('off')
-    plt.title('Word Cloud for Combined Text Data')
-    plt.show()
-
-def regression_analysis(results: List[dict]):
-    df = pd.DataFrame(results)
-    X = df[['vref']]
-    y = df['score']
-    model = LinearRegression().fit(X, y)
-    
-    y_pred = model.predict(X)
-    mse = mean_squared_error(y, y_pred)
-
-    plt.figure(figsize=(10, 6))
-    plt.scatter(X, y, color='blue', label='Actual')
-    plt.plot(X, y_pred, color='red', label='Predicted')
-    plt.xlabel('vref')
-    plt.ylabel('Semantic Similarity Score')
-    plt.title('Regression Analysis')
-    plt.legend()
-    plt.show()
-
-    print(f"Mean Squared Error: {mse}")
-
 # Run the assessment and save results to a file
 output = assess()
-save_results_to_file(output["results"], "./LABsE/resultsFinalLABsE.txt")
+if output:
+    save_results_to_file(output["results"], "./LABsE/resultsFinalLABsE.txt")
 
-# Perform additional analyses
-correlation_analysis(output["results"])
-time_series_analysis(output["results"])
-revision_file_path = "LABsE/SmallData27/aai-aai-small.txt"
-reference_file_path = "LABsE/SmallData27/fai-fai.txt"
-revision_text = get_text(revision_file_path)
-reference_text = get_text(reference_file_path)
-text_based_analysis(revision_text, reference_text)
-regression_analysis(output["results"])
-
-# Additional functions from the LASER script
-save_sim_scores_to_file([result['score'] for result in output["results"]], "references/sim_scores.txt")
-replace_keyword_in_file(revision_file_path)
-replace_keyword_in_file(reference_file_path)
-line_numbers = get_line_numbers_from_vref("references/vref_file.txt")
-replace_lines_with_blank(revision_file_path, line_numbers)
-replace_lines_with_blank(reference_file_path, line_numbers)
-merge_files('references/vref.txt', 'references/sim_scores.txt', 'references/merged_results.txt')
-removeverse("references/vref_file.txt", "references/merged_results.txt")
+# Perform additional analyses if output is not None
+if output:
+    descriptive_statistics([result['score'] for result in output["results"]])
+    plot_time_series([result['score'] for result in output["results"]])
+    analyze_extreme_cases(
+        [result['revision'] for result in output["results"]],
+        [result['reference'] for result in output["results"]],
+        [result['score'] for result in output["results"]]
+    )
+    labels = cluster_verses_embeddings(np.array([result['score'] for result in output["results"]]).reshape(-1, 1))
+    characterize_clusters([result['revision'] for result in output["results"]], labels)
