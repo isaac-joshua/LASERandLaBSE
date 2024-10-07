@@ -11,7 +11,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.linear_model import LinearRegression
 import pandas as pd
-from collections import Counter
+from collections import Counter 
 
 class SimilarityApp:
     def __init__(self, root):
@@ -30,8 +30,8 @@ class SimilarityApp:
         self.text_output.pack()
 
         # Figure for plotting with multiple subplots
-        self.figure, self.axes = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))  # Adjust the number of rows and columns based on your needs
-        self.canvas = FigureCanvasTkAgg(self.figure, master=root)
+        self.figure, self.axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 5))  # This creates a 1D array of axes
+        self.canvas = FigureCanvasTkAgg(self.figure, master=self.root)
         self.canvas.get_tk_widget().pack()
 
         # Initialize file paths
@@ -110,7 +110,7 @@ class SimilarityApp:
         self.text_output.insert(tk.END, f"Standard Deviation: {std_dev_score}\n")
 
     def plot_similarity_distribution(self, sim_scores):
-        ax = self.axes[0, 0]
+        ax = self.axes[0]
         ax.clear()
         ax.hist(sim_scores, bins=20, alpha=0.75)
         ax.set_title('Distribution of Similarity Scores')
@@ -145,7 +145,7 @@ class SimilarityApp:
             self.text_output.insert(tk.END, f"Most common words in cluster {label}: {word_freq.most_common(10)}\n")
 
     def plot_time_series(self, sim_scores):
-        ax = self.axes[0, 1]
+        ax = self.axes[1]
         ax.clear()
         ax.plot(sim_scores, label='Similarity Score')
         ax.set_title('Trend of Similarity Scores Over Time')
@@ -169,7 +169,7 @@ class SimilarityApp:
             self.text_output.insert(tk.END, f"Score: {sim_scores[i]}\n\n")
 
     def regression_analysis(self, embeddings, sim_scores):
-        ax = self.axes[0, 2]
+        ax = self.axes[2]
         model = LinearRegression()
         model.fit(embeddings, sim_scores)
         predictions = model.predict(embeddings)
@@ -183,28 +183,6 @@ class SimilarityApp:
         self.canvas.draw()
 
 if __name__ == "__main__":
-    main()
-
-
-# def main():
-#     vref_file_path = "references/vref_file.txt"
-#     revision_file_path = "data/aai-aai.txt"
-#     reference_file_path = "data/aak-aak.txt"
-    
-#     replace_keyword_in_file(revision_file_path)
-#     replace_keyword_in_file(reference_file_path)
-    
-#     line_numbers = get_line_numbers_from_vref(vref_file_path)
-    
-#     replace_lines_with_blank(revision_file_path, line_numbers)
-#     replace_lines_with_blank(reference_file_path, line_numbers)
-    
-#     sim_scores = assess(revision_file_path,reference_file_path)
-#     save_sim_scores_to_file(sim_scores, "references/sim_scores.txt")
-
-#     merge_files('references/vref.txt', 'references/sim_scores.txt', 'references/merged_results.txt')
-#     merge_data_path = 'references/merged_results.txt'
-#     removeverse(vref_file_path , merge_data_path)
-#     print("The process has been completed")
-# if __name__ == "__main__":
-#     main()
+    root = tk.Tk()
+    app = SimilarityApp(root)
+    root.mainloop()

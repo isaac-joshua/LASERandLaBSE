@@ -25,17 +25,18 @@ class Assessment(BaseModel):
 
 
 def get_labse_model(cache_path="model_cache"):
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     try:
         print("Trying to load model from cache...")
         semsim_model = BertModel.from_pretrained(
             "setu4993/LaBSE", cache_dir=cache_path
-        ).eval()
+        ).eval().to(device)  # Move the model to the device
     except OSError as e:
         print(e)
         print("Downloading model instead of using cache...")
         semsim_model = BertModel.from_pretrained(
             "setu4993/LaBSE", cache_dir=cache_path, force_download=True
-        ).eval()
+        ).eval().to(device)  # Move the model to the device
     print("Semantic model initialized...")
 
     try:
@@ -59,31 +60,33 @@ def get_sim_scores(
     semsim_model=None,
     semsim_tokenizer=None,
 ):
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
     if semsim_model is None or semsim_tokenizer is None:
         semsim_model, semsim_tokenizer = get_labse_model()
-    
-    print(f"rev_sents_output: {rev_sents_output[:5]}")
-    print(f"ref_sents_output: {ref_sents_output[:5]}")
 
+    # Tokenize inputs
     rev_sents_input = semsim_tokenizer(
         rev_sents_output, return_tensors="pt", padding=True, truncation=True
-    )
+    ).to(device)  # Move tensors to the device
     ref_sents_input = semsim_tokenizer(
         ref_sents_output, return_tensors="pt", padding=True, truncation=True
-    )
+    ).to(device)  # Move tensors to the device
+
+    # Perform forward pass with no gradient calculation
     with torch.no_grad():
         rev_sents_output = semsim_model(**rev_sents_input)
         ref_sents_output = semsim_model(**ref_sents_input)
 
-    rev_sents_embedding = rev_sents_output.pooler_output
-    ref_sents_embedding = rev_sents_output.pooler_output
+    # Extract embeddings and compute similarity
+    rev_sents_embedding = rev_sents_output.pooler_output.to(device)
+    ref_sents_embedding = ref_sents_output.pooler_output.to(device)
 
     sim_scores = torch.nn.CosineSimilarity(dim=1, eps=1e-6)(
         rev_sents_embedding, ref_sents_embedding
-    ).tolist()
+    ).cpu().tolist()  # Move results to CPU for further processing
 
     return sim_scores
-
 
 def get_text(file_path: str):
     encodings = ['utf-8', 'latin-1', 'ascii', 'utf-16']
@@ -178,13 +181,6 @@ def removeverse(reference_path, result_path):
     print("The references have been replaced with blank lines in the updated file.")
 
 
-def save_sim_scores_to_file(sim_scores, file_path):
-    print("Saving the similarity scores to file")
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-    with open(file_path, 'w') as file:
-        for score in sim_scores:
-            file.write(f"{score}\n")
-
 
 def assess():
     assessment = {
@@ -196,8 +192,9 @@ def assess():
     if isinstance(assessment, dict):
         assessment = Assessment(**assessment)
         
-    revision_file_path = "LABsE/SmallData27/wol-wol2010.txt"
-    reference_file_path = "LABsE/SmallData27/eng-engf35.txt"
+    # Paths to text files on the system
+    revision_file_path = "D:/Model/LASERandLABSE/LASER/corpus/urb-urbNT.txt"
+    reference_file_path = "D:/Model/LASERandLABSE/LASER/corpus/eng-engf35.txt"
     
     revision_text = get_text(revision_file_path)
     reference_text = get_text(reference_file_path)
@@ -312,10 +309,13 @@ def regression_analysis(results: List[dict]):
     plt.show()
 
     print(f"Mean Squared Error: {mse}")
-
+def save_sim_scores_to_file(sim_scores, file_path):
+    with open(file_path, 'w') as file:
+        for score in sim_scores:
+            file.write(f"{score}\n")
 
 output = assess()
-save_results_to_file(output["results"], "./LABsE/resultsLABsE.txt")
+save_results_to_file(output["results"], "resultsLABsE.txt")
 
 revision_file_path = "LABsE/SmallData27/wol-wol2010.txt"
 reference_file_path = "LABsE/SmallData27/eng-engf35.txt"

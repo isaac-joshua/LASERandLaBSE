@@ -4,8 +4,19 @@ from pydantic import BaseModel
 from typing import List, Optional, Literal
 import torch
 import numpy as np
-from laserembeddings import Laser # type: ignore
-# from test import  removeverse
+from laserembeddings import Laser  # type: ignore
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from itertools import zip_longest
+from collections import Counter
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from sklearn.linear_model import LinearRegression
+import tkinter as tk
+from tkinter import filedialog
+from laser import plot_time_series,analyze_extreme_cases,characterize_clusters,regression_analysis
 
 class Assessment(BaseModel):
     id: Optional[int] = None
@@ -25,32 +36,74 @@ def get_text(file_path: str):
             continue
     raise ValueError(f"Unable to read the file with any of the encodings: {encodings}")
 
-def get_sim_scores(rev_sents_output: List[str],ref_sents_output: List[str],):
-    print("Getting the similarity scores")
+def get_sim_scores_and_embeddings(rev_sents_output: List[str], ref_sents_output: List[str]):
+    print("Getting the similarity scores and embeddings")
     laser = Laser()
-    rev_sents_embedding = laser.embed_sentences(rev_sents_output, lang='en')
+    rev_sents_embedding = laser.embed_sentences(rev_sents_output, lang='be')
     ref_sents_embedding = laser.embed_sentences(ref_sents_output, lang='en')
-    sim_scores = torch.nn.functional.cosine_similarity(
-        torch.tensor(rev_sents_embedding),
-        torch.tensor(ref_sents_embedding),
-        dim=1
-    ).tolist()
-    return sim_scores
+    
+    # Convert NumPy arrays to PyTorch tensors
+    rev_sents_tensor = torch.tensor(rev_sents_embedding)
+    ref_sents_tensor = torch.tensor(ref_sents_embedding)
 
-def assess(revision,reference):
-    print("Assessing the similarity")
-    revision_file_path = revision
-    reference_file_path = reference
+    # Calculate similarity scores
+    sim_scores = torch.nn.functional.cosine_similarity(rev_sents_tensor, ref_sents_tensor, dim=1).tolist()
 
-    revision_text = get_text(revision_file_path)
-    reference_text = get_text(reference_file_path)
+    return sim_scores, rev_sents_embedding
 
-    revision_sentences = revision_text.split('\n')
-    reference_sentences = reference_text.split('\n')
+# def get_sim_scores_and_embeddings(rev_sents_output: List[str], ref_sents_output: List[str]):
+#     print("Getting the similarity scores and embeddings")
+    
+#     # Ensure the sentence lists are of equal length
+#     if len(rev_sents_output) != len(ref_sents_output):
+#         print(f"Warning: Mismatch in number of sentences! "
+#               f"Revision sentences: {len(rev_sents_output)}, Reference sentences: {len(ref_sents_output)}")
+        
+#         # Truncate or pad the lists to make them equal
+#         min_len = min(len(rev_sents_output), len(ref_sents_output))
+#         rev_sents_output = rev_sents_output[:min_len]  # Truncate the longer list
+#         ref_sents_output = ref_sents_output[:min_len]  # Truncate the longer list
 
-    sim_scores = get_sim_scores(revision_sentences, reference_sentences)
+#     # Embed the sentences
+#     laser = Laser()
+#     rev_sents_embedding = laser.embed_sentences(rev_sents_output, lang='as')
+#     ref_sents_embedding = laser.embed_sentences(ref_sents_output, lang='en')
+    
+#     # Convert NumPy arrays to PyTorch tensors
+#     rev_sents_tensor = torch.tensor(rev_sents_embedding)
+#     ref_sents_tensor = torch.tensor(ref_sents_embedding)
 
-    return sim_scores
+#     # Calculate similarity scores
+#     sim_scores = torch.nn.functional.cosine_similarity(rev_sents_tensor, ref_sents_tensor, dim=1).tolist()
+
+#     return sim_scores, rev_sents_embedding
+
+
+def descriptive_statistics(sim_scores):
+    scores_array = np.array(sim_scores)
+    print("Mean similarity:", np.mean(scores_array))
+    print("Median similarity:", np.median(scores_array))
+    print("Standard Deviation of similarity scores:", np.std(scores_array))
+    plt.hist(scores_array, bins=20, alpha=0.75)
+    plt.title('Distribution of Similarity Scores')
+    plt.xlabel('Similarity Score')
+    plt.ylabel('Frequency')
+    plt.show()
+
+def cluster_verses_embeddings(embeddings):
+    optimal_k = 2
+    optimal_silhouette = -1
+    for k in range(2, 10):  # Assuming a range for possible K values
+        kmeans = KMeans(n_clusters=k, random_state=0).fit(embeddings)
+        silhouette_avg = silhouette_score(embeddings, kmeans.labels_)
+        print(f"Silhouette Score for k={k}: {silhouette_avg}")
+        if silhouette_avg > optimal_silhouette:
+            optimal_k = k
+            optimal_silhouette = silhouette_avg
+    # Final model with optimal k
+    kmeans = KMeans(n_clusters=optimal_k, random_state=0).fit(embeddings)
+    print(f"Optimal number of clusters: {optimal_k}")
+    return kmeans.labels_
 
 def save_sim_scores_to_file(sim_scores, file_path):
     print("Saving the similarity scores to file")
@@ -63,12 +116,9 @@ def replace_keyword_in_file(file_path: str, keyword: str = "<range>", replacemen
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             lines = file.readlines()
-
         modified_lines = [line.replace(keyword, replacement) for line in lines]
-
         with open(file_path, 'w', encoding='utf-8') as file:
             file.writelines(modified_lines)
-
         print(f"Replaced '{keyword}' with '{replacement}' in {file_path}")
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -78,15 +128,13 @@ def get_line_numbers_from_vref(file_path: str):
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             lines = file.readlines()
-
         line_numbers = []
         for line in lines:
             try:
                 line_number = int(line.strip().split()[-1])
                 line_numbers.append(line_number)
-                print(line_numbers)
             except ValueError:
-                line_numbers.append(-1)  
+                line_numbers.append(-1)
         return line_numbers
     except Exception as e:
         print(f"An error occurred while reading vref file: {e}")
@@ -97,71 +145,106 @@ def replace_lines_with_blank(file_path: str, line_numbers: List[int]):
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             lines = file.readlines()
-
         for line_number in line_numbers:
             if line_number == -1:
-                lines.append(' \n')  
+                lines.append(' \n')
             elif 0 <= line_number - 1 < len(lines):
-                lines[line_number - 1] = ' \n' 
-
+                lines[line_number - 1] = ' \n'
         with open(file_path, 'w', encoding='utf-8') as file:
             file.writelines(lines)
-
         print(f"Replaced specified lines with blank spaces in {file_path}")
     except Exception as e:
         print(f"An error occurred while processing the file {file_path}: {e}")
-        
+
 def merge_files(file1_path, file2_path, output_path):
     print("Merging the files")
     with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2, open(output_path, 'w') as output:
-        # Use zip_longest to handle files of different lengths
-        from itertools import zip_longest
-        # Iterate over both files simultaneously
         for line1, line2 in zip_longest(file1, file2, fillvalue=''):
-            # Strip newline characters and combine the lines
-            merged_line = line1.strip() +' '+ line2.strip() + '\n'
+            merged_line = line1.strip() + ' ' + line2.strip() + '\n'
             output.write(merged_line)
+    print(f"Files {file1_path} and {file2_path} have been merged into {output_path}.")
 
-def removeverse(refernce_path, result_path):
+def removeverse(reference_path, result_path):
     print("Removing the verse")
-    with open(refernce_path, 'r') as vref_file:
+    
+    with open(reference_path, 'r') as vref_file:
         vref_lines = vref_file.readlines()
-
+    
     with open(result_path, 'r') as merged_file:
         merged_lines = merged_file.readlines()
-
+    
     # Extract references to look for
     vref_references = [line.strip() for line in vref_lines]
-
+    
+    # Construct the updated file path based on input filenames
+    updated_file_path = result_path.replace('merged_results', 'merged_results_removedverse')
+    
     # Open the merged results file to write the updated content
-    with open('references/merged_results.txt', 'w') as merged_file_updated:
+    with open(updated_file_path, 'w') as merged_file_updated:
         for line in merged_lines:
+            # If any reference is found in the line, replace the line with a blank
             if any(ref in line for ref in vref_references):
                 merged_file_updated.write('\n')  # Write a blank line
             else:
                 merged_file_updated.write(line)  # Write the original line
+    
+    print(f"The references have been replaced with blank lines in {updated_file_path}.")
 
-    print("The references have been replaced with blank lines in the updated file.")
+def select_files():
+    root = tk.Tk()
+    root.withdraw()  # Hide the root window
+
+    # Select the revision file
+    revision_file_path = filedialog.askopenfilename(title="Select the Revision File",
+                                                    filetypes=[("Text Files", "*.txt")])
+    
+    # Select the reference file
+    reference_file_path = filedialog.askopenfilename(title="Select the Reference File",
+                                                     filetypes=[("Text Files", "*.txt")])
+    
+    return revision_file_path, reference_file_path
 
 def main():
-    vref_file_path = "references/vref_file.txt"
-    revision_file_path = "data/aai-aai.txt"
-    reference_file_path = "data/aak-aak.txt"
+    revision_file_path, reference_file_path = select_files()
+    
+    revision_filename = os.path.basename(revision_file_path).split('-')[0]
+    reference_filename = os.path.basename(reference_file_path).split('-')[0]
+
+    sim_scores_filename = f"{revision_filename}-{reference_filename}-sim-scores.txt"
+    merged_results_filename = f"{revision_filename}-{reference_filename}-merged_results.txt"
     
     replace_keyword_in_file(revision_file_path)
     replace_keyword_in_file(reference_file_path)
     
-    line_numbers = get_line_numbers_from_vref(vref_file_path)
+    # line_numbers = get_line_numbers_from_vref("references/vref_file.txt")
     
-    replace_lines_with_blank(revision_file_path, line_numbers)
-    replace_lines_with_blank(reference_file_path, line_numbers)
+    # replace_lines_with_blank(revision_file_path, line_numbers)
+    # replace_lines_with_blank(reference_file_path, line_numbers)
     
-    sim_scores = assess(revision_file_path,reference_file_path)
-    save_sim_scores_to_file(sim_scores, "references/sim_scores.txt")
+    revision_text = get_text(revision_file_path)
+    reference_text = get_text(reference_file_path)
+    
+    revision_sentences = revision_text.split('\n')
+    reference_sentences = reference_text.split('\n')
+    
+    sim_scores, embeddings = get_sim_scores_and_embeddings(revision_sentences, reference_sentences)
+    
+    save_sim_scores_to_file(sim_scores, f"sim/{sim_scores_filename}")
+    
+    # descriptive_statistics(sim_scores)
+    # labels = cluster_verses_embeddings(embeddings)
+    # print("Cluster labels for verses:", labels)
+    # plot_time_series(sim_scores)
+    # analyze_extreme_cases(revision_sentences, reference_sentences, sim_scores)
+    # characterize_clusters(revision_sentences, labels)
 
-    merge_files('references/vref.txt', 'references/sim_scores.txt', 'references/merged_results.txt')
-    merge_data_path = 'references/merged_results.txt'
-    removeverse(vref_file_path , merge_data_path)
+    # regression_analysis(embeddings, sim_scores)
+    
+    merge_files('references/vref.txt', f"sim/{sim_scores_filename}", f"references/{merged_results_filename}")
+    merge_data_path = f"references/{merged_results_filename}"
+    removeverse("references/vref_file.txt", merge_data_path)
+    
     print("The process has been completed")
+
 if __name__ == "__main__":
     main()
