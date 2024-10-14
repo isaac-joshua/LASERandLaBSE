@@ -1,0 +1,297 @@
+{'vref': 0, 'score': 0.22586235404014587, 'revision': 'Gɨn ka lə Jəju Kɨrɨsɨ kɨ ngon ka *Dabɨdɨ, kɨ ngon ka *Abɨrakam ə to kɨn:', 'reference': 'Iti i Jesu ana’a’agir wabih, aiwob ana efane i David ana rara’ane tufuw naatu omatanenane i Abraham ana rara’ane tufuw. Naatu iti i hai gin anayimih.'}
+{'vref': 1, 'score': 0.7598996162414551, 'revision': 'Abɨrakam ojɨ *Isakɨ, Isakɨ ojɨ *Jakobɨ, Jakobɨ ojɨ Juda kɨ ngako̰e je.', 'reference': 'Abraham natun i Isaac, naatu Isaac natun i Jacob, Jacob natun i Judah, Judah i taitin tuwahinah bairi hitufuw.'}
+{'vref': 2, 'score': 0.7745800018310547, 'revision': 'Juda əi kɨ Tamar oji Parəsɨ əi kɨ Jara, Parəsɨ ojɨ Əsɨrom, Əsɨrom ojɨ Aram,', 'reference': 'Naatu Judah natunatun i Perez tain Zerah hairi hitufuw, hinah wabin Tamar. Naatu Perez natun i Hezron, Hezron natun i Ram,'}
+{'vref': 3, 'score': 0.7334505319595337, 'revision': 'Aram ojɨ Amɨnadabɨ, Amɨnadabɨ ojɨ Naso̰, Naso̰ ojɨ Salmo̰,', 'reference': 'Ram natun i Aminadab, Aminadab natun i Nashon, Nashon natun i Salmon.'}
+{'vref': 4, 'score': 0.7162104845046997, 'revision': 'Salmo̰ əi kɨ Rakabɨ oji Bowajɨ, Bowajɨ əi kɨ Rutɨ oji Obədɨ, Obədɨ ojɨ Jəse,', 'reference': 'Naatu Salmon natun i Boaz, hinah wabin Rahab, naatu Boaz natun i Obed, hinah wabin Ruth, naatu Obed natun i Jesse.'}
+{'vref': 5, 'score': 0.604020357131958, 'revision': 'Jəse ojɨ ngar Dabɨdɨ. Dabɨdɨ taa ne Uri ojɨ-n Salomo̰,', 'reference': 'Jesse natun i David, aiwob orot. David natun i Solomon, naatu Solomon hinah i orot Uriah ana kwafur.'}
+{'vref': 6, 'score': 0.8100139498710632, 'revision': '*Salomo̰ ojɨ Robowam, Robowam ojɨ Abɨya, Abɨya ojɨ Aja,', 'reference': 'Solomon natun i Rehoboam, Rehoboam natun i Abaijah, Abaijah natun i Asa,'}
+{'vref': 7, 'score': 0.7256136536598206, 'revision': 'Aja ojɨ Jojapa, Jojapa ojɨ Joram, Joram ojɨ Ojɨyasɨ,', 'reference': 'Asa natun i Jehosafat, Jehosafat natun i Jehoram, Jehoram natun i Uzaiah,'}
+{'vref': 8, 'score': 0.7262866497039795, 'revision': 'Ojɨyasɨ ojɨ Jowatam, Jowatam ojɨ Akajɨ, Akajɨ ojɨ Ejəkɨyasɨ,', 'reference': 'Uzaiah natun i Jotham, Jotham natun i Ahaz, Ahaz natun i Hezekiah.'}
+{'vref': 9, 'score': 0.744084358215332, 'revision': 'Ejəkɨyasɨ Ojɨ Manasɨ, Manasɨ ojɨ Amo̰, Amo̰ ojɨ Jojɨyasɨ,', 'reference': 'Naatu Hezekiah natun i Manasseh, Manasseh natun i Amon, Amon natun i Josiah,'}
+{'vref': 10, 'score': 0.6272856593132019, 'revision': 'Jojɨyasɨ ojɨ Jəkonɨyasɨ kɨ ngako̰e je. Dɔkagɨloe tɨ kɨn ə uwəi dɨje kɨ Jorijaləm awi səde ɓəə *Babɨlon tɨ.', 'reference': 'Josiah natun i Jeconiah, Jeconiah taitin tuwahinah bairi hibitutufuw ana veya’amaim baiyow matar Babilon sabuw hina hibuwih hire hin Babilonamaim hima.'}
+{'vref': 11, 'score': 0.6611909866333008, 'revision': 'Lokɨ awi səde Babɨlon tɨ, Jəkonɨyasɨ ojɨ Salatɨyəl, Salatɨyəl ojɨ Jorobabəl,', 'reference': 'Babilonane himatabir maiye hinan ufunamaim Jeconiah natun i Shealtiel, naatu Shealtiel natun i Zerubbabel,'}
+{'vref': 12, 'score': 0.7296099662780762, 'revision': 'Jorobabəl ojɨ Abɨyudɨ, Abɨyudɨ ojɨ Eliyakɨm, Eliyakɨm ojɨ Ajɔr,', 'reference': 'Zerubbabel natun i Abiud, naatu Abiud natun i Eliakim, Eliakim natun i Azor,'}
+{'vref': 13, 'score': 0.8033127784729004, 'revision': 'Ajɔr ojɨ Sadokɨ, Sadokɨ ojɨ Akɨm, Akɨm ojɨ Eliyudɨ,', 'reference': 'Azor natun i Zadok naatu Zadok natun i Akim, Akim natun i Eliud,'}
+{'vref': 14, 'score': 0.8280588388442993, 'revision': 'Eliyudɨ ojɨ Eliyajar, Eliyajar ojɨ Mata̰, Mata̰ ojɨ Jakobɨ,', 'reference': 'Eliud natun i Eleazar, Eleazar natun i Mathan, Mathan natun i Jacob,'}
+{'vref': 15, 'score': 0.5889792442321777, 'revision': 'Jakobɨ ojɨ Jɨsəpɨ kɨ ngaw mari. Nɨngə Mari ojɨ Jəju kɨ ɓari-e Kɨrɨsɨ kɨ e dəw kɨ Luwə mbəte.', 'reference': 'Jacob natun i Joseph, Joseph aawan i Mary, naatu Mary natun i Jesu, it isan Keriso tarouw ta’o.'}
+{'vref': 16, 'score': 0.6081933379173279, 'revision': 'Ɨlə ngɨre dɔ Abɨrakam tɨ bɨtɨ dɔ Dabɨdɨ tɨ, gɨn kojɨ e dɔgɨ gɨde sɔ, ə ḭ dɔ Dabɨdɨ tɨ bɨtɨ kaw ɓəə Babɨlon e gɨn kojɨ dɔgɨ gɨde sɔ, taa ḭ dɔ kaw ɓəə Babɨlon tɨ bɨtɨ kojɨ Kɨrɨsɨ tɨ, e gɨn kojɨ dɔgɨ gɨde sɔ tɔ.', 'reference': 'Imih Abraham ana veya’amaim busuruf re na David ana veya’amaim titit, agi’agir kwerekweren etei 14, naatu David ana veya’amaim re na hin Babilon hima’ama i 14, naatu Babilon hima’am imaim busuruf na Keriso ana veya’amaim titit i na’atube 14.'}
+{'vref': 17, 'score': 0.5211082100868225, 'revision': 'Go rəbɨ kojɨ Jəju Kɨrɨsɨ ə to kɨn. Ko̰e Mari e nje nongɨ lə Jɨsəpɨ kɨ uwə dɔe. Nɨngə, lokɨ ɨngəi-naa dəne kɨ dɨngəm al ɓəy ə, Mari ḭ səm kɨ tɔgɨ lə NDɨl Luwə.', 'reference': 'Jesu Keriso ana tufuw an i iti na’atube busuruf. Jesu hinah Mary i orot Joseph bai’awanin isan ana rum hi’o, baise hairi nanabin hima’am ana veya, Mary Anun Kakafiyin re targabuw yan wanawanan rara bobokafuf i so’ob.'}
+{'vref': 18, 'score': 0.6211158633232117, 'revision': 'Lo kɨn tɨ no̰o̰ be, Jɨsəpɨ kɨ nje nongɨ lə Mari, kɨ e dəw kɨ dana, ndɨgɨ kadɨ n-əl ta kɨn kɨ taga n-ɨlə-n rɔsɔl dɔ Mari tɨ al, adɨ ɔjɨ mene tɨ kadɨ n-ɨyə̰i-naa kɨ Mari gɨdɨ ngə̰y par.', 'reference': 'Naatu Joseph i orot gewasin, imih men kok boro bebeyanamaim Mary tibiya’uhuw; imih wa’iwa’iramaim Mary kwahirin isan bogaigiwas.'}
+{'vref': 19, 'score': 0.5715398192405701, 'revision': 'Lokɨ ɔjɨ ta kɨn be mene tɨ nɨngə, malayka lə Ɓaɓe tḛḛ hɔy me ni tɨ əl-e ə nə: «Jɨsəpɨ, ngon ka *Dabɨdɨ, ɨɓəl al kadɨ ɨtaa Mari nei tɨ, tadɔ ngon kɨ to mee tɨ kɨn, e ngon kɨ re kɨ go rəbɨ lə NDɨl Luwə.', 'reference': 'Baise ma binotanot tasinafumih, Regah ana tounamatar kakafiyin mimumaim tit eo, “Joseph, David ana agir, Mary bai na bai’awanin isan men inabirumih, anayabin iti i God Anunin Kakafiyinane yan matar.'}
+{'vref': 20, 'score': 0.7168035507202148, 'revision': 'Mari a ojɨ ngon kɨ dɨngəm, nɨngə a ɨndə tɔe nə Jəju, tadɔ e ə e dəw kɨ a ajɨ dɨje ləne me majal je tɨ ləde.»', 'reference': 'I boro kek orot nayai, o wabin Jesu iniwab, anayabin i boro ana sabuw hai bowabow kakafihine niyawasih.”'}
+{'vref': 21, 'score': 0.28221994638442993, 'revision': 'Nḛ je kɨn pətɨ a rai nḛ be mba kadɨ ta kɨ Ɓaɓe əl kɨ ta nje kəl ta kɨ tae tɨ kəte nu kɨn tɔl tane:', 'reference': 'Sawar iti etei himamatar i abisa God ana dinab orot wanawananamaim eo Buk Atamaninamaim kikirum i na iturobe.'}
+{'vref': 22, 'score': 0.5041122436523438, 'revision': 'Ɓaɓe əl ta kɨ ta nje kəl ta kɨ tae tɨ ə nə: «Oi ngon kɨ mandɨ kɨ gər dɨngəm al ɓəy a ḭ səm, A ojɨ ngon kɨ dɨngəm, Nɨngə a ɓari-e nə Emanuwəl, Kɨ kɔr gɨne nə: “Luwə e səje”.»', 'reference': 'm “Babin biyan numin boro yan namatar, nataub kek orot nayai wabin Immanuel hiniwab” anayabin God it biyatamaim.'}
+{'vref': 23, 'score': 0.46102529764175415, 'revision': 'Lokɨ Jɨsəpɨ ndəl dɔ ɓi tɨ, ra təkɨ malayka əl-e-n, adɨ taa Mari nene tɨ, re sie kəy.', 'reference': 'Joseph matan nuw mimisir ufunamaim, Regah ana tounamatar biyun na’atube Mary bai i’awan hairi hin ana bar.'}
+{'vref': 24, 'score': 0.6026542782783508, 'revision': 'Nə gər-e kɨ dəne kɨ dɨngəm tɨ al, bɨtɨ kadɨ Mari ojɨ-n ngon Ojɨ ngon kɨ dɨngəm, adɨ Jɨsəpɨ ɨndə tɔe nə Jəju.', 'reference': 'Baise Joseph i Mary hairi inu’e hima hin Mary taub kek orot yai, naatu Joseph kek bai wabin Jesu iwab eaf.'}
+{'vref': 25, 'score': 0.7424821853637695, 'revision': 'Oji Jəju Bətɨləhəm, dɔnangɨ kɨ Jude tɨ, dɔkagɨlo ko̰ɓe tɨ lə ngar Erodɨ. Go koje tɨ, njé nḛ gər je kɨ dɔ mee je tɨ, ḭḭ lo kɨbə kadɨ tɨ rəi Jorijaləm,', 'reference': 'Judea wanawanan Herod bi’aiwob ana veya’amaim, merar bar ta wabin Bethlehem imaim Jesu tufuw. Nati’imaim orot so’obayah afa daman baiyabayah veya yeninane hina Jerusalem hitit,'}
+{'vref': 26, 'score': 0.6736583709716797, 'revision': 'nɨngə dəji əi nə: «NGar lə *Jɨpɨ je kɨ oji-e kɨn e ra be ə? J-o mee lie tḛḛ lo kɨbə kadɨ tɨ ə jɨ re kadɨ j-ɔsɨ məkəsɨje nangɨ no̰e tɨ.» ', 'reference': 'naatu sabuw hibatiyih, “Jew hai aiwob kek tutufuw i menamaim inu’in? Aki ana daman veya yeninane yey a’itin imih kwafirinamih ana.” '}
+{'vref': 27, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 28, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 29, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 30, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 31, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 32, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 33, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 34, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 35, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 36, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 37, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 38, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 39, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 40, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 41, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 42, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 43, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 44, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 45, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 46, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 47, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 48, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 49, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 50, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 51, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 52, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 53, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 54, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 55, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 56, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 57, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 58, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 59, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 60, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 61, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 62, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 63, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 64, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 65, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 66, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 67, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 68, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 69, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 70, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 71, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 72, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 73, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 74, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 75, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 76, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 77, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 78, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 79, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 80, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 81, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 82, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 83, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 84, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 85, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 86, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 87, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 88, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 89, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 90, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 91, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 92, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 93, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 94, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 95, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 96, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 97, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 98, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 99, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 100, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 101, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 102, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 103, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 104, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 105, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 106, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 107, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 108, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 109, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 110, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 111, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 112, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 113, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 114, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 115, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 116, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 117, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 118, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 119, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 120, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 121, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 122, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 123, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 124, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 125, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 126, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 127, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 128, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 129, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 130, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 131, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 132, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 133, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 134, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 135, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 136, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 137, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 138, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 139, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 140, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 141, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 142, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 143, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 144, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 145, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 146, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 147, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 148, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 149, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 150, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 151, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 152, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 153, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 154, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 155, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 156, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 157, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 158, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 159, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 160, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 161, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 162, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 163, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 164, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 165, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 166, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 167, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 168, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 169, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 170, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 171, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 172, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 173, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 174, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 175, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 176, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 177, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 178, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 179, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 180, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 181, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 182, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 183, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 184, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 185, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 186, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 187, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 188, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 189, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 190, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 191, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 192, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 193, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 194, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 195, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 196, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 197, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 198, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 199, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 200, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 201, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 202, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 203, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 204, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 205, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 206, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 207, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 208, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 209, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 210, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 211, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 212, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 213, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 214, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 215, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 216, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 217, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 218, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 219, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 220, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 221, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 222, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 223, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 224, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 225, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 226, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 227, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 228, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 229, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 230, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 231, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 232, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 233, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 234, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 235, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 236, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 237, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 238, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 239, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 240, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 241, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 242, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 243, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 244, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 245, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 246, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 247, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 248, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 249, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 250, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 251, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 252, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 253, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 254, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 255, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 256, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 257, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 258, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 259, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 260, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 261, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 262, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 263, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 264, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 265, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 266, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 267, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 268, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 269, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 270, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 271, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 272, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 273, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 274, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 275, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 276, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 277, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 278, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 279, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 280, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 281, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 282, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 283, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 284, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 285, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 286, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 287, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 288, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 289, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 290, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 291, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 292, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 293, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 294, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 295, 'score': 1.0, 'revision': ' ', 'reference': ' '}
+{'vref': 296, 'score': 1.0, 'revision': '', 'reference': ''}
