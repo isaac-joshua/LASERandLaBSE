@@ -72,7 +72,7 @@ def get_labse_model(cache_path="model_cache"):
 
     return semsim_model, semsim_tokenizer, device
 
-def get_sim_scores_and_embeddings_from_sentences(rev_sents_output: List[str], ref_sents_output: List[str]):
+def get_sim_scores_and_embeddings_from_sentences(rev_sents_output: List[str], ref_sents_output: List[str], batch_size: int = 8):
     print("Calculating similarity scores and embeddings from sentences")
     
     semsim_model, semsim_tokenizer, device = get_labse_model()
@@ -83,12 +83,24 @@ def get_sim_scores_and_embeddings_from_sentences(rev_sents_output: List[str], re
             embeddings = semsim_model(**inputs).pooler_output
         return embeddings
 
-    rev_sents_embedding = embed_sentences(rev_sents_output)
-    ref_sents_embedding = embed_sentences(ref_sents_output)
+    sim_scores = []
+    rev_sents_embedding_list = []
 
-    sim_scores = torch.nn.functional.cosine_similarity(rev_sents_embedding, ref_sents_embedding, dim=1).cpu().tolist()
+    for i in range(0, len(rev_sents_output), batch_size):
+        rev_batch = rev_sents_output[i:i + batch_size]
+        ref_batch = ref_sents_output[i:i + batch_size]
+
+        rev_sents_embedding = embed_sentences(rev_batch)
+        ref_sents_embedding = embed_sentences(ref_batch)
+        batch_sim_scores = torch.nn.functional.cosine_similarity(rev_sents_embedding, ref_sents_embedding, dim=1).cpu().tolist()
+        
+        sim_scores.extend(batch_sim_scores)
+        rev_sents_embedding_list.append(rev_sents_embedding)
+
+    # Concatenate embeddings for all batches if needed
+    all_rev_sents_embedding = torch.cat(rev_sents_embedding_list, dim=0) if rev_sents_embedding_list else None
     
-    return sim_scores, rev_sents_embedding
+    return sim_scores, all_rev_sents_embedding
 
 def merge_dataframes(df_list: List[pd.DataFrame]):
     print("Merging DataFrames")
@@ -112,7 +124,7 @@ def analyze_correlation_in_dataframe(df: pd.DataFrame, column1: str, column2: st
 
 def main():
     vref_file_path = "references/vref_file.txt"
-    revision_file_path = "SmallData27/tur-turev.txt"
+    revision_file_path = "SmallData27/tam-tam2017.txt"
     reference_file_path = "SmallData27/eng-eng-kjv2006.txt"
     # revision_file_path = "SmallData27/aai-aai-small.txt"
     # reference_file_path = "SmallData27/bjv-bjvNT.txt"
