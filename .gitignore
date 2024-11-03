@@ -9,3 +9,4 @@ model_cache/models--setu4993--LaBSE/snapshots/5afa72968dfe068421082cbc30411073b1
 LaBSE/model_cache
 LASER/corpus
 __pycache__
+nlp.py
