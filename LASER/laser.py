@@ -15,6 +15,21 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.linear_model import LinearRegression
+from transformers import pipeline
+from scipy.stats import ttest_ind
+
+# Check if GPU is available
+device = 0 if torch.cuda.is_available() else -1
+
+
+ner_pipeline = pipeline(
+    "ner",
+    model="elastic/distilbert-base-uncased-finetuned-conll03-english",
+    tokenizer="elastic/distilbert-base-uncased-finetuned-conll03-english",
+    grouped_entities=True,
+    device=device,
+)
+
 class Assessment(BaseModel):
     id: Optional[int] = None
     revision_id: int
@@ -66,12 +81,16 @@ def cluster_verses_embeddings(embeddings):
         if silhouette_avg > optimal_silhouette:
             optimal_k = k
             optimal_silhouette = silhouette_avg
-    # Final model with optimal k
     kmeans = KMeans(n_clusters=optimal_k, random_state=0).fit(embeddings)
     print(f"Optimal number of clusters: {optimal_k}")
     return kmeans.labels_
 
-def save_sim_scores_to_file(sim_scores, file_path):
+# def save_sim_scores_to_file(sim_scores, names_presence, file_path):
+#     print("Saving the similarity scores to file")
+#     with open(file_path, 'w') as file:
+#         for score, has_name in zip(sim_scores, names_presence):
+#             file.write(f"{score}\t{has_name}\n")
+def save_sim_scores_to_file(sim_scores: List[float], file_path: str):
     print("Saving the similarity scores to file")
     with open(file_path, 'w') as file:
         for score in sim_scores:
@@ -125,9 +144,7 @@ def replace_lines_with_blank(file_path: str, line_numbers: List[int]):
 def merge_files(file1_path, file2_path, output_path):
     print("Merging the files")
     with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2, open(output_path, 'w') as output:
-        # Use zip_longest to handle files of different lengths
         for line1, line2 in zip_longest(file1, file2, fillvalue=''):
-            # Strip newline characters and combine the lines
             merged_line = line1.strip() + ' ' + line2.strip() + '\n'
             output.write(merged_line)
 
@@ -137,9 +154,7 @@ def removeverse(reference_path, result_path):
         vref_lines = vref_file.readlines()
     with open(result_path, 'r') as merged_file:
         merged_lines = merged_file.readlines()
-    # Extract references to look for
     vref_references = [line.strip() for line in vref_lines]
-    # Open the merged results file to write the updated content
     with open('references/merged_results.txt', 'w') as merged_file_updated:
         for line in merged_lines:
             if any(ref in line for ref in vref_references):
@@ -147,7 +162,7 @@ def removeverse(reference_path, result_path):
             else:
                 merged_file_updated.write(line)  # Write the original line
     print("The references have been replaced with blank lines in the updated file.")
-    
+
 def analyze_correlation(data_frame, column1, column2):
     correlation = data_frame[column1].corr(data_frame[column2])
     print(f"Correlation between {column1} and {column2}: {correlation}")
@@ -156,7 +171,7 @@ def analyze_correlation(data_frame, column1, column2):
     plt.xlabel(column1)
     plt.ylabel(column2)
     plt.show()
-    
+
 def plot_time_series(sim_scores):
     plt.figure(figsize=(10, 5))
     plt.plot(sim_scores, label='Similarity Score')
@@ -165,7 +180,7 @@ def plot_time_series(sim_scores):
     plt.ylabel('Similarity Score')
     plt.legend()
     plt.show()
-    
+
 def analyze_extreme_cases(revision_sentences, reference_sentences, sim_scores, num_cases=5):
     sorted_indices = np.argsort(sim_scores)
     print("Lowest similarity verses:")
@@ -173,7 +188,7 @@ def analyze_extreme_cases(revision_sentences, reference_sentences, sim_scores, n
         print(f"Revision: {revision_sentences[i]}")
         print(f"Reference: {reference_sentences[i]}")
         print(f"Score: {sim_scores[i]}\n")
-    
+
     print("Highest similarity verses:")
     for i in sorted_indices[-num_cases:]:
         print(f"Revision: {revision_sentences[i]}")
@@ -185,9 +200,9 @@ def characterize_clusters(sentences, labels):
     cluster_contents = {i: [] for i in set(labels)}
     for sentence, label in zip(sentences, labels):
         words = word_tokenize(sentence)
-        filtered_words = [word for word in words if word not in stop_words and word.isalnum()]
+        filtered_words = [word.lower() for word in words if word.lower() not in stop_words and word.isalnum()]
         cluster_contents[label].extend(filtered_words)
-    
+
     for label, words in cluster_contents.items():
         word_freq = Counter(words)
         print(f"Most common words in cluster {label}: {word_freq.most_common(10)}")
@@ -200,47 +215,81 @@ def regression_analysis(features, sim_scores):
     plt.xlabel('Actual Scores')
     plt.ylabel('Predicted Scores')
     plt.title('Regression Analysis Results')
-    plt.plot([min(sim_scores), max(sim_scores)], [min(predictions), max(predictions)], color='red')  # Line of best fit
+    plt.plot([min(sim_scores), max(sim_scores)], [min(predictions), max(predictions)], color='red') 
     plt.show()
-    
+
+def detect_names_in_sentences(sentences):
+    print("Detecting names in sentences using batch processing with transformers")
+    names_presence = []
+    batch_size = 32  
+    for i in range(0, len(sentences), batch_size):
+        batch_sentences = sentences[i:i+batch_size]
+        ner_results_batch = ner_pipeline(batch_sentences)
+        for ner_results in ner_results_batch:
+            has_name = any(ent['entity_group'] == 'PER' for ent in ner_results)
+            names_presence.append(has_name)
+    return names_presence
+
+def compare_similarity_with_names(sim_scores, names_presence):
+    print("Comparing similarity scores based on the presence of names")
+    scores_with_names = [score for score, has_name in zip(sim_scores, names_presence) if has_name]
+    scores_without_names = [score for score, has_name in zip(sim_scores, names_presence) if not has_name]
+    t_stat, p_value = ttest_ind(scores_with_names, scores_without_names, equal_var=False)
+    print(f"\nSimilarity Scores Analysis Based on Presence of Names:")
+    print(f"Average similarity (with names): {np.mean(scores_with_names):.4f}")
+    print(f"Average similarity (without names): {np.mean(scores_without_names):.4f}")
+    print(f"T-test p-value: {p_value:.4f}\n")
+
 def main():
     vref_file_path = "references/vref_file.txt"
-    revision_file_path = "data/aai-aai.txt"
-    reference_file_path = "data/aak-aak.txt"
-    
+    revision_file_path = "newdata/tur-turev.txt"
+    reference_file_path = "newdata/eng-eng-kjv2006.txt"
+
     replace_keyword_in_file(revision_file_path)
     replace_keyword_in_file(reference_file_path)
-    
+
     line_numbers = get_line_numbers_from_vref(vref_file_path)
-    
+
     replace_lines_with_blank(revision_file_path, line_numbers)
     replace_lines_with_blank(reference_file_path, line_numbers)
-    
+
     revision_text = get_text(revision_file_path)
     reference_text = get_text(reference_file_path)
-    
+
     revision_sentences = revision_text.split('\n')
     reference_sentences = reference_text.split('\n')
-    
-    sim_scores, embeddings = get_sim_scores_and_embeddings(revision_sentences, reference_sentences)
-    
-    save_sim_scores_to_file(sim_scores, "references/sim_scores.txt")
-    
-    descriptive_statistics(sim_scores)
-    
-    labels = cluster_verses_embeddings(embeddings)
-    print("Cluster labels for verses:", labels)
-    
-    plot_time_series(sim_scores)
-    analyze_extreme_cases(revision_sentences, reference_sentences, sim_scores)
-    characterize_clusters(revision_sentences, labels)
 
-    regression_analysis(embeddings, sim_scores)
-    
+    # Ensure both lists have the same length
+    min_length = min(len(revision_sentences), len(reference_sentences))
+    revision_sentences = revision_sentences[:min_length]
+    reference_sentences = reference_sentences[:min_length]
+
+    sim_scores, embeddings = get_sim_scores_and_embeddings(revision_sentences, reference_sentences)
+
+    # Detect names in revision sentences
+    # names_presence = detect_names_in_sentences(revision_sentences)
+
+    # Save similarity scores and names presence to file
+    save_sim_scores_to_file(sim_scores, "references/sim_scores.txt")
+
+    # descriptive_statistics(sim_scores)
+
+    # labels = cluster_verses_embeddings(embeddings)
+    # print("Cluster labels for verses:", labels)
+
+    # plot_time_series(sim_scores)
+    # analyze_extreme_cases(revision_sentences, reference_sentences, sim_scores)
+    # characterize_clusters(revision_sentences, labels)
+
+    # regression_analysis(embeddings, sim_scores)
+
     merge_files('references/vref.txt', 'references/sim_scores.txt', 'references/merged_results.txt')
     merge_data_path = 'references/merged_results.txt'
     removeverse(vref_file_path, merge_data_path)
-    
+
+    # Compare similarity scores based on presence of names
+    # compare_similarity_with_names(sim_scores, names_presence)
+
     print("The process has been completed")
 
 if __name__ == "__main__":
