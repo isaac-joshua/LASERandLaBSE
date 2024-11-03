@@ -124,8 +124,8 @@ def analyze_correlation_in_dataframe(df: pd.DataFrame, column1: str, column2: st
 
 def main():
     vref_file_path = "references/vref_file.txt"
-    revision_file_path = "SmallData27/tam-tam2017.txt"
-    reference_file_path = "SmallData27/eng-eng-kjv2006.txt"
+    revision_file_path = "SmallData27/hin-hin2017.txt"
+    reference_file_path = "SmallData27/tam-tam2017.txt"
     # revision_file_path = "SmallData27/aai-aai-small.txt"
     # reference_file_path = "SmallData27/bjv-bjvNT.txt"
     vref_txt_path = "references/vref.txt"
